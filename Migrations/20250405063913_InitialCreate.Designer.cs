@@ -12,7 +12,7 @@ using NguyenSao_2122110145.Data;
 namespace NguyenSao_2122110145.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250329075357_InitialCreate")]
+    [Migration("20250405063913_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -77,6 +77,12 @@ namespace NguyenSao_2122110145.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("longtext");
 
@@ -85,6 +91,12 @@ namespace NguyenSao_2122110145.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 

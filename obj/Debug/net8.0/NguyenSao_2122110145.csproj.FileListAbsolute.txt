@@ -109,3 +109,8 @@ D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.
 D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\ASP_NET\NguyenSao_2122110145\obj\Debug\net8.0\NguyenSao_2122110145.csproj.AssemblyReference.cache
 D:\ASP_NET\NguyenSao_2122110145\obj\Debug\net8.0\NguyenSa.465DB26B.Up2Date
+D:\ASP_NET\NguyenSao_2122110145\obj\Debug\net8.0\NguyenSao_2122110145.MvcApplicationPartsAssemblyInfo.cs
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.OpenApi.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll

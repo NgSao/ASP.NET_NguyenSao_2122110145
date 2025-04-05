@@ -13,6 +13,22 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "D:\\ASP_NET\\NguyenSao_2122110145\\wwwroot\\images\\0ea753b5-f529-4dc3-8a33-58c22edfe80b.png",
+      "PackagePath": "staticwebassets\\images\\0ea753b5-f529-4dc3-8a33-58c22edfe80b.png"
+    },
+    {
+      "Id": "D:\\ASP_NET\\NguyenSao_2122110145\\wwwroot\\images\\9fe7f514-31ae-4fa9-bbcd-fb86e81459fd.png",
+      "PackagePath": "staticwebassets\\images\\9fe7f514-31ae-4fa9-bbcd-fb86e81459fd.png"
+    },
+    {
+      "Id": "D:\\ASP_NET\\NguyenSao_2122110145\\wwwroot\\images\\d0e61820-3277-47c2-baa6-fbb3bac5748c.png",
+      "PackagePath": "staticwebassets\\images\\d0e61820-3277-47c2-baa6-fbb3bac5748c.png"
+    },
+    {
+      "Id": "D:\\ASP_NET\\NguyenSao_2122110145\\wwwroot\\images\\ef664eb4-ebd4-47be-96f5-8ba896a88f8d.png",
+      "PackagePath": "staticwebassets\\images\\ef664eb4-ebd4-47be-96f5-8ba896a88f8d.png"
+    },
+    {
       "Id": "D:\\ASP_NET\\NguyenSao_2122110145\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
