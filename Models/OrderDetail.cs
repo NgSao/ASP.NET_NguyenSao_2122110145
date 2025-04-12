@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NguyenSao_2122110145.Models
 {
@@ -8,11 +8,21 @@ namespace NguyenSao_2122110145.Models
     {
         [Key]
         public int Id { get; set; }
+
         public int OrderId { get; set; }
-        public int ProductId { get; set; }
+
+        public int ProductColorId { get; set; }
+
+        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public Order? Order { get; set; }
-        public Product? Product { get; set; }
+
+        [Range(0, double.MaxValue)]
+        public decimal Price { get; set; }
+
+        [ForeignKey("OrderId")]
+        public virtual Order? Order { get; set; }
+
+        [ForeignKey("ProductColorId")]
+        public virtual ProductColor? ProductColor { get; set; }
     }
 }

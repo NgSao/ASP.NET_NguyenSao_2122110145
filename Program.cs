@@ -1,58 +1,22 @@
 
 
-// var builder = WebApplication.CreateBuilder(args);
-
-// // Đăng ký DbContext kết nối MySQL
-// builder.Services.AddDbContext<AppDbContext>(options =>
-//     options.UseMySql(
-//         builder.Configuration.GetConnectionString("MySqlConnection"),
-//         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))
-//     ));
-
-// // Add services to the container.
-// builder.Services.AddControllersWithViews();
-// var app = builder.Build();
-
-// // Configure the HTTP request pipeline.
-// if (!app.Environment.IsDevelopment())
-// {
-//     app.UseExceptionHandler("/Home/Error");
-//     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-//     app.UseHsts();
-// }
-
-// app.UseHttpsRedirection();
-// app.UseStaticFiles();
-// app.UseRouting();
-// app.UseAuthorization();
-// app.MapControllers();
-
-// app.MapControllerRoute(
-//     name: "default",
-//     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// app.MapControllerRoute(
-//     name: "default",
-//     pattern: "{controller=Product}/{action=Index}/{id?}");
-
-// app.Run();
-
-
-
-
-
 //Dùng swager để test API
 //http://localhost:5037/swagger/index.html
 //dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
-
+//http://localhost:5037/api/brands 
 using NguyenSao_2122110145.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using NguyenSao_2122110145.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Mappber
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
 
 // Đăng ký dịch vụ DbContext với MySQL
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -60,6 +24,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("MySqlConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))
     ));
+
+// Đăng ký CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 // Đăng ký dịch vụ xác thực bằng JWT
 builder.Services.AddAuthentication(options =>
@@ -77,11 +53,12 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
-        )
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
+
 });
+
+
 
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
@@ -131,8 +108,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 
-app.UseAuthentication(); // phải đặt trước UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

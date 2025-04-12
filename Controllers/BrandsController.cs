@@ -1,99 +1,87 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NguyenSao_2122110145.Data;
+using NguyenSao_2122110145.DTOs;
 using NguyenSao_2122110145.Models;
+using System.Security.Claims;
 
 namespace NguyenSao_2122110145.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class BrandController : ControllerBase
+    [ApiController]
+    public class BrandsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public BrandController(AppDbContext context)
+        public BrandsController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/brands
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetBrands()
         {
-            var brands = await _context.Brands
-                .Include(b => b.Products)
-                .ToListAsync();
-            return Ok(brands);
+            var brands = await _context.Brands.ToListAsync();
+            var brandDtos = _mapper.Map<List<BrandResponseDto>>(brands);
+            return Ok(brandDtos);
         }
 
-        // GET: api/brands/5
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBrand(int id)
         {
-            var brand = await _context.Brands
-                .Include(b => b.Products)
-                .FirstOrDefaultAsync(b => b.Id == id);
-
+            var brand = await _context.Brands.FindAsync(id);
             if (brand == null)
-            {
                 return NotFound();
-            }
 
-            return Ok(brand);
+            var brandDto = _mapper.Map<BrandResponseDto>(brand);
+            return Ok(brandDto);
         }
 
-        // POST: api/brands
         [HttpPost]
-        [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> CreateBrand([FromBody] Brand brand)
+        [Authorize(Roles = "Manager,Admin")]
+        public async Task<IActionResult> CreateBrand([FromBody] BrandCreateDto brandDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
+            var brand = _mapper.Map<Brand>(brandDto);
 
             _context.Brands.Add(brand);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBrand), new { id = brand.Id }, brand);
+            var responseDto = _mapper.Map<BrandResponseDto>(brand);
+            return CreatedAtAction(nameof(GetBrand), new { id = brand.Id }, responseDto);
         }
 
-        // PUT: api/brands/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> UpdateBrand(int id, [FromBody] Brand brand)
+        [Authorize(Roles = "Manager,Admin")]
+        public async Task<IActionResult> UpdateBrand(int id, [FromBody] BrandCreateDto brandDto)
         {
-            if (id != brand.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingBrand = await _context.Brands.FindAsync(id);
-            if (existingBrand == null)
-            {
+            var brand = await _context.Brands.FindAsync(id);
+            if (brand == null)
                 return NotFound();
-            }
 
-            existingBrand.Name = brand.Name;
-            existingBrand.ImageUrl = brand.ImageUrl;
+            _mapper.Map(brandDto, brand);
 
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            var responseDto = _mapper.Map<BrandResponseDto>(brand);
+            return Ok(responseDto);
         }
 
-        // DELETE: api/brands/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBrand(int id)
         {
             var brand = await _context.Brands.FindAsync(id);
             if (brand == null)
-            {
                 return NotFound();
-            }
 
             _context.Brands.Remove(brand);
             await _context.SaveChangesAsync();

@@ -9,15 +9,17 @@ namespace NguyenSao_2122110145.Models
         [Key]
         public int Id { get; set; }
 
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         public string? Avatar { get; set; }
 
-        public string? Email { get; set; }
+        public required string Email { get; set; }
 
-        public string? PasswordHash { get; set; }
+        public required string PasswordHash { get; set; }
 
-        [Required]
-        public RoleType Role { get; set; }
+        public required RoleType Role { get; set; }
+
+        public UserStatus? UserStatus { get; set; }
+
     }
 }

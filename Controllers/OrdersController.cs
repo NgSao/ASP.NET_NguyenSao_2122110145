@@ -1,131 +1,163 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NguyenSao_2122110145.Data;
+using NguyenSao_2122110145.DTOs;
 using NguyenSao_2122110145.Models;
 using System.Security.Claims;
+using OrderStatus = NguyenSao_2122110145.Models.OrderStatus;
 
 namespace NguyenSao_2122110145.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class OrdersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public OrdersController(AppDbContext context)
+        public OrdersController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/orders
         [HttpGet]
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Staff,Manager,Admin")]
         public async Task<IActionResult> GetOrders()
         {
             var orders = await _context.Orders
                 .Include(o => o.User)
+                .Include(o => o.Address)
+                .Include(o => o.PaymentMethod)
+                .Include(o => o.DiscountCode)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.ProductColor)
                 .ToListAsync();
-            return Ok(orders);
+
+            var orderDtos = _mapper.Map<List<OrderResponseDto>>(orders);
+            return Ok(orderDtos);
         }
 
-        // GET: api/orders/my-orders
-        [HttpGet("my-orders")]
-        [Authorize(Roles = "User,Admin,Staff")]
-        public async Task<IActionResult> GetMyOrders()
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var orders = await _context.Orders
-                .Include(o => o.User)
-                .Where(o => o.UserId == userId)
-                .ToListAsync();
-            return Ok(orders);
-        }
-
-        // GET: api/orders/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,Staff")]
+        [Authorize(Roles = "Customer,Staff,Manager,Admin")]
         public async Task<IActionResult> GetOrder(int id)
         {
             var order = await _context.Orders
                 .Include(o => o.User)
+                .Include(o => o.Address)
+                .Include(o => o.PaymentMethod)
+                .Include(o => o.DiscountCode)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.ProductColor)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
-            {
                 return NotFound();
-            }
 
-            // Người dùng chỉ được xem đơn hàng của chính mình
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            if (User.IsInRole("User") && order.UserId != userId)
+            if (User.IsInRole("Customer"))
             {
-                return Forbid();
+                var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (claim == null)
+                    return Forbid("Không tìm thấy thông tin người dùng.");
+
+                var userId = int.Parse(claim.Value);
+                if (order.UserId != userId)
+                    return Forbid();
             }
 
-            return Ok(order);
+            var orderDto = _mapper.Map<OrderResponseDto>(order);
+            return Ok(orderDto);
         }
 
-        // POST: api/orders
+
         [HttpPost]
-        [Authorize(Roles = "User,Admin,Staff")]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto orderDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            if (User.IsInRole("User") && order.UserId != userId)
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (claim == null)
             {
-                return Forbid();
+                return Forbid("Không tìm thấy thông tin người dùng.");
             }
 
-            order.OrderDate = DateTime.UtcNow;
+            var userId = int.Parse(claim.Value);
+
+            if (orderDto.UserId != userId)
+                return Forbid("Bạn chỉ có thể tạo đơn hàng cho chính mình.");
+
+            if (orderDto.UserId != userId)
+                return Forbid("Bạn chỉ có thể tạo đơn hàng cho chính mình.");
+
+            foreach (var detail in orderDto.OrderDetails)
+            {
+                var inventory = await _context.Inventories
+                    .FirstOrDefaultAsync(i => i.ProductColorId == detail.ProductColorId);
+                if (inventory == null || inventory.Quantity < detail.Quantity)
+                    return BadRequest($"Sản phẩm {detail.ProductColorId} không đủ hàng.");
+            }
+
+            var order = _mapper.Map<Order>(orderDto);
+            order.Status = OrderStatus.Pending;
+
+            order.TotalAmount = order.OrderDetails.Sum(od => od.Quantity * od.Price);
+            order.FinalAmount = order.TotalAmount;
+
+            if (orderDto.DiscountCodeId.HasValue)
+            {
+                var discountCode = await _context.DiscountCodes
+                    .FirstOrDefaultAsync(dc => dc.Id == orderDto.DiscountCodeId && dc.IsActive && dc.UsedCount < dc.UsageLimit && dc.EndDate >= DateTime.UtcNow);
+                if (discountCode == null)
+                    return BadRequest("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
+
+                if (discountCode.DiscountPercent.HasValue)
+                    order.FinalAmount = order.TotalAmount * (1 - discountCode.DiscountPercent.Value / 100);
+                else if (discountCode.DiscountAmount.HasValue)
+                    order.FinalAmount = order.TotalAmount - discountCode.DiscountAmount.Value;
+
+                if (order.FinalAmount < 0)
+                    order.FinalAmount = 0;
+
+                discountCode.UsedCount++;
+            }
+
+            foreach (var detail in order.OrderDetails)
+            {
+                var inventory = await _context.Inventories
+                    .FirstOrDefaultAsync(i => i.ProductColorId == detail.ProductColorId);
+
+                if (inventory == null)
+                {
+                    return BadRequest($"Sản phẩm màu {detail.ProductColorId} không có trong kho.");
+                }
+
+                inventory.Quantity -= detail.Quantity;
+            }
+
+
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+            var responseDto = _mapper.Map<OrderResponseDto>(order);
+            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, responseDto);
         }
 
-        // PUT: api/orders/5
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> UpdateOrder(int id, [FromBody] Order order)
-        {
-            if (id != order.Id)
-            {
-                return BadRequest();
-            }
-
-            var existingOrder = await _context.Orders.FindAsync(id);
-            if (existingOrder == null)
-            {
-                return NotFound();
-            }
-
-            existingOrder.UserId = order.UserId;
-            existingOrder.TotalAmount = order.TotalAmount;
-
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        // DELETE: api/orders/5
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "Staff,Manager,Admin")]
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] OrderStatus status)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order == null)
-            {
                 return NotFound();
-            }
 
-            _context.Orders.Remove(order);
+            order.Status = status;
+
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            var responseDto = _mapper.Map<OrderResponseDto>(order);
+            return Ok(responseDto);
         }
     }
 }

@@ -123,3 +123,5 @@ D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Protoco
 D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\AutoMapper.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

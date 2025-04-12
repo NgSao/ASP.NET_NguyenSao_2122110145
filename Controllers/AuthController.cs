@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NguyenSao_2122110145.Data;
 using NguyenSao_2122110145.Models;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -22,7 +23,7 @@ namespace NguyenSao_2122110145.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel model)
+        public IActionResult Login([FromBody] LoginDto model)
         {
             if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
             {
@@ -74,14 +75,14 @@ namespace NguyenSao_2122110145.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterModel model)
+        public IActionResult Register([FromBody] RegisterDto dto)
         {
-            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
+            if (string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Password))
             {
                 return BadRequest("Email và mật khẩu là bắt buộc.");
             }
 
-            var existingUser = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+            var existingUser = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
             if (existingUser != null)
             {
                 return Conflict("Email đã được sử dụng.");
@@ -89,10 +90,10 @@ namespace NguyenSao_2122110145.Controllers
 
             var newUser = new User
             {
-                Name = model.Name,
-                Email = model.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-                Role = model.Role
+                Name = dto.Name,
+                Email = dto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Role = dto.Role
             };
 
             _context.Users.Add(newUser);
@@ -107,17 +108,21 @@ namespace NguyenSao_2122110145.Controllers
     }
 }
 
-public class LoginModel
+public class LoginDto
 {
-    public string? Email { get; set; }
-    public string? Password { get; set; }
+    [EmailAddress]
+    public required string Email { get; set; }
+    public required string Password { get; set; }
 }
 
-public class RegisterModel
+public class RegisterDto
 {
-    public string? Name { get; set; }
-    public string? Email { get; set; }
-    public string? Password { get; set; }
-    public RoleType Role { get; set; } = RoleType.User;
+    public required string Name { get; set; }
+
+    [EmailAddress]
+    public required string Email { get; set; }
+    public required string Password { get; set; }
+    public RoleType Role { get; set; } = RoleType.Customer;
+    public UserStatus Status { get; set; } = UserStatus.Active;
 }
 
