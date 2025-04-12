@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace NguyenSao_2122110145.Models
 {
     [Table("brand")]
-    public class Brand
+    public class Brand : AuditableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -13,7 +13,7 @@ namespace NguyenSao_2122110145.Models
 
         public string? ImageUrl { get; set; }
 
-        public List<Product> Products { get; set; } = new List<Product>();
+        public List<Product>? Products { get; set; }
 
     }
 }

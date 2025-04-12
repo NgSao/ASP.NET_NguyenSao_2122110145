@@ -8,7 +8,7 @@
 
 // namespace NguyenSao_2122110145.Controllers
 // {
- 
+
 //     public class ProductController : Controller
 //     {
 //         private readonly AppDbContext _context;
@@ -170,81 +170,109 @@
 //         }
 //     }
 // }
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NguyenSao_2122110145.Data;
 using NguyenSao_2122110145.Models;
-using System.Linq;
-
-//Dùng swager
 
 namespace NguyenSao_2122110145.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public ProductController(AppDbContext context)
+        public ProductsController(AppDbContext context)
         {
             _context = context;
         }
 
+        // GET: api/products
         [HttpGet]
-        public IActionResult GetAll()
+        [AllowAnonymous] // Mọi người đều có thể xem danh sách sản phẩm
+        public async Task<IActionResult> GetProducts()
         {
-            var products = _context.Products.ToList();
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .ToListAsync();
             return Ok(products);
         }
 
+        // GET: api/products/5
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProduct(int id)
         {
-            var product = _context.Products.Find(id);
-            if (product == null) return NotFound();
+            var product = await _context.Products
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
             return Ok(product);
         }
 
+        // POST: api/products
         [HttpPost]
-        public IActionResult Create([FromBody] Product product)
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> CreateProduct([FromBody] Product product)
         {
-            if (string.IsNullOrEmpty(product.ImageUrl))
+            if (!ModelState.IsValid)
             {
-                product.ImageUrl = "/images/default.png"; 
+                return BadRequest(ModelState);
             }
 
             _context.Products.Add(product);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
+        // PUT: api/products/5
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Product product)
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
-            var existingProduct = _context.Products.FirstOrDefault(p => p.Id == id);
-            if (existingProduct == null) return NotFound();
-
-            existingProduct.Name = product.Name;
-            existingProduct.Price = product.Price;
-
-            if (!string.IsNullOrEmpty(product.ImageUrl))
+            if (id != product.Id)
             {
-                existingProduct.ImageUrl = product.ImageUrl;
+                return BadRequest();
             }
 
-            _context.SaveChanges();
-            return Ok(existingProduct);
+            var existingProduct = await _context.Products.FindAsync(id);
+            if (existingProduct == null)
+            {
+                return NotFound();
+            }
+
+            existingProduct.Name = product.Name;
+            existingProduct.Description = product.Description;
+            existingProduct.ImageUrl = product.ImageUrl;
+            existingProduct.Price = product.Price;
+            existingProduct.CategoryId = product.CategoryId;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
+        // DELETE: api/products/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [Authorize(Roles = "Admin")] // Chỉ Admin được xóa
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = _context.Products.Find(id);
-            if (product == null) return NotFound();
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
 
             _context.Products.Remove(product);
-            _context.SaveChanges();
-            return Ok(new { message = "Deleted successfully" });
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

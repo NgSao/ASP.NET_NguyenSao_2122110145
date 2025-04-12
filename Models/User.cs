@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NguyenSao_2122110145.Models
 {
-    [Table("user")]
-    public class User
+    [Table("users")]
+    public class User : AuditableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -14,5 +14,10 @@ namespace NguyenSao_2122110145.Models
         public string? Avatar { get; set; }
 
         public string? Email { get; set; }
+
+        public string? PasswordHash { get; set; }
+
+        [Required]
+        public RoleType Role { get; set; }
     }
 }

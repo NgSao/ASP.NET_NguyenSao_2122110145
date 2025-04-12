@@ -114,3 +114,12 @@ D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.OpenApi.dll
 D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
 D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\BCrypt.Net-Next.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+D:\ASP_NET\NguyenSao_2122110145\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

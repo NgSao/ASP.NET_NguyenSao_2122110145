@@ -3,25 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NguyenSao_2122110145.Models
 {
-    [Table("product")]
-    public class Product
+    [Table("products")]
+    public class Product : AuditableEntity
     {
         [Key]
         public int Id { get; set; }
 
         public string? Name { get; set; }
-
+        public string? Description { get; set; }
         public string? ImageUrl { get; set; }
 
         public decimal Price { get; set; }
-
-        public DateTime CreatedDate { get; set; }
-
-        public DateTime? UpdatedDate { get; set; }
-
-        public string? CreatedBy { get; set; }
-
-        public string? UpdatedBy { get; set; }
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
 
 
     }
