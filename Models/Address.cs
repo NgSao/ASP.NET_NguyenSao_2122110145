@@ -14,7 +14,7 @@ namespace NguyenSao_2122110145.Models
         [Phone]
         public required string PhoneNumber { get; set; }
 
-        public required string Street { get; set; }
+        public required string AddressDetail { get; set; }
 
         public required string Ward { get; set; }
 
@@ -22,11 +22,14 @@ namespace NguyenSao_2122110145.Models
 
         public required string City { get; set; }
 
-
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
         public required User User { get; set; }
+
+        public bool Active { get; set; }
+
+
     }
 
 }

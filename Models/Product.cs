@@ -12,21 +12,34 @@ namespace NguyenSao_2122110145.Models
         public int Id { get; set; }
 
         public required string Name { get; set; }
+        public required string Slug { get; set; }
 
-        public string? Description { get; set; }
+
+        public required string Description { get; set; }
+
+        [Range(0, double.MaxValue)]
+        public decimal OriginalPrice { get; set; }
+
+        [Range(0, double.MaxValue)]
+        public decimal SalePrice { get; set; }
 
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
-        public virtual Category? Category { get; set; }
+        public required Category Category { get; set; }
 
         public int BrandId { get; set; }
 
         [ForeignKey("BrandId")]
-        public virtual Brand? Brand { get; set; }
+        public required Brand Brand { get; set; }
 
-        public IEnumerable<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
+        public ICollection<Variant> Variants { get; set; } = new List<Variant>();
 
-        public virtual IEnumerable<Image>? Images { get; set; }
+        public virtual ICollection<Media>? Medias { get; set; } = new List<Media>();
+
+        public ICollection<ProductSpecification> Specifications { get; set; } = new List<ProductSpecification>();
+
+        public required Status Status { get; set; } = Status.Active;
+
     }
 }

@@ -16,15 +16,18 @@ namespace NguyenSao_2122110145.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "brand",
+                name: "brands",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Slug = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ImageUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -34,7 +37,7 @@ namespace NguyenSao_2122110145.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_brand", x => x.Id);
+                    table.PrimaryKey("PK_brands", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -46,9 +49,18 @@ namespace NguyenSao_2122110145.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Slug = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ImageUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ParentId = table.Column<int>(type: "int", nullable: true)
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -75,11 +87,36 @@ namespace NguyenSao_2122110145.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UsageLimit = table.Column<int>(type: "int", nullable: false),
                     UsedCount = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_discount_codes", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "otp",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Email = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Code = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Attempts = table.Column<int>(type: "int", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_otp", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -111,16 +148,17 @@ namespace NguyenSao_2122110145.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    FullName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Avatar = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: false)
+                    Password = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Role = table.Column<int>(type: "int", nullable: false),
-                    UserStatus = table.Column<int>(type: "int", nullable: true),
+                    UserStatus = table.Column<int>(type: "int", nullable: false),
+                    LastLogin = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -142,10 +180,15 @@ namespace NguyenSao_2122110145.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Description = table.Column<string>(type: "longtext", nullable: true)
+                    Slug = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    OriginalPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    SalePrice = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     BrandId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -157,9 +200,9 @@ namespace NguyenSao_2122110145.Migrations
                 {
                     table.PrimaryKey("PK_products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_products_brand_BrandId",
+                        name: "FK_products_brands_BrandId",
                         column: x => x.BrandId,
-                        principalTable: "brand",
+                        principalTable: "brands",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -181,7 +224,7 @@ namespace NguyenSao_2122110145.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Street = table.Column<string>(type: "longtext", nullable: false)
+                    AddressDetail = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Ward = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -189,7 +232,14 @@ namespace NguyenSao_2122110145.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     City = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -198,28 +248,6 @@ namespace NguyenSao_2122110145.Migrations
                         name: "FK_addresses_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "images",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ImageUrl = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_images", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_images_products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -235,30 +263,7 @@ namespace NguyenSao_2122110145.Migrations
                     Key = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Value = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_product_specifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_product_specifications_products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "product_variants",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Storage = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    BasePrice = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -268,9 +273,9 @@ namespace NguyenSao_2122110145.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_product_variants", x => x.Id);
+                    table.PrimaryKey("PK_product_specifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_product_variants_products_ProductId",
+                        name: "FK_product_specifications_products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "products",
                         principalColumn: "Id",
@@ -288,7 +293,13 @@ namespace NguyenSao_2122110145.Migrations
                     Content = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -338,6 +349,35 @@ namespace NguyenSao_2122110145.Migrations
                         name: "FK_reviews_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "variants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Size = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    BasePrice = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_variants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_variants_products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -394,7 +434,42 @@ namespace NguyenSao_2122110145.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "product_colors",
+                name: "feedbacks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_feedbacks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_feedbacks_questions_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_feedbacks_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "colors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -417,42 +492,13 @@ namespace NguyenSao_2122110145.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_product_colors", x => x.Id);
+                    table.PrimaryKey("PK_colors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_product_colors_product_variants_VariantId",
+                        name: "FK_colors_variants_VariantId",
                         column: x => x.VariantId,
-                        principalTable: "product_variants",
+                        principalTable: "variants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "feedbacks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    QuestionId = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_feedbacks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_feedbacks_questions_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "questions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_feedbacks_users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "users",
-                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -463,7 +509,7 @@ namespace NguyenSao_2122110145.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    ProductColorId = table.Column<int>(type: "int", nullable: false),
+                    ColorId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
@@ -476,9 +522,9 @@ namespace NguyenSao_2122110145.Migrations
                 {
                     table.PrimaryKey("PK_cart_items", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_cart_items_product_colors_ProductColorId",
-                        column: x => x.ProductColorId,
-                        principalTable: "product_colors",
+                        name: "FK_cart_items_colors_ColorId",
+                        column: x => x.ColorId,
+                        principalTable: "colors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -496,18 +542,57 @@ namespace NguyenSao_2122110145.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ProductColorId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    ColorId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_inventories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_inventories_product_colors_ProductColorId",
-                        column: x => x.ProductColorId,
-                        principalTable: "product_colors",
+                        name: "FK_inventories_colors_ColorId",
+                        column: x => x.ColorId,
+                        principalTable: "colors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Medias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ImageUrl = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProductId = table.Column<int>(type: "int", nullable: true),
+                    ColorId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Medias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Medias_colors_ColorId",
+                        column: x => x.ColorId,
+                        principalTable: "colors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Medias_products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "products",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -518,7 +603,7 @@ namespace NguyenSao_2122110145.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     OrderId = table.Column<int>(type: "int", nullable: false),
-                    ProductColorId = table.Column<int>(type: "int", nullable: false),
+                    ColorId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -532,31 +617,32 @@ namespace NguyenSao_2122110145.Migrations
                 {
                     table.PrimaryKey("PK_order_details", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_order_details_orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "orders",
+                        name: "FK_order_details_colors_ColorId",
+                        column: x => x.ColorId,
+                        principalTable: "colors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_order_details_product_colors_ProductColorId",
-                        column: x => x.ProductColorId,
-                        principalTable: "product_colors",
+                        name: "FK_order_details_orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "product_sales",
+                name: "sales",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ProductColorId = table.Column<int>(type: "int", nullable: false),
+                    ColorId = table.Column<int>(type: "int", nullable: false),
                     DiscountAmount = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
                     DiscountPercent = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -566,11 +652,11 @@ namespace NguyenSao_2122110145.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_product_sales", x => x.Id);
+                    table.PrimaryKey("PK_sales", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_product_sales_product_colors_ProductColorId",
-                        column: x => x.ProductColorId,
-                        principalTable: "product_colors",
+                        name: "FK_sales_colors_ColorId",
+                        column: x => x.ColorId,
+                        principalTable: "colors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -582,9 +668,9 @@ namespace NguyenSao_2122110145.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_cart_items_ProductColorId",
+                name: "IX_cart_items_ColorId",
                 table: "cart_items",
-                column: "ProductColorId");
+                column: "ColorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_cart_items_UserId",
@@ -597,6 +683,11 @@ namespace NguyenSao_2122110145.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_colors_VariantId",
+                table: "colors",
+                column: "VariantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_feedbacks_QuestionId",
                 table: "feedbacks",
                 column: "QuestionId");
@@ -607,24 +698,30 @@ namespace NguyenSao_2122110145.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_images_ProductId",
-                table: "images",
+                name: "IX_inventories_ColorId",
+                table: "inventories",
+                column: "ColorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_ColorId",
+                table: "Medias",
+                column: "ColorId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Medias_ProductId",
+                table: "Medias",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_inventories_ProductColorId",
-                table: "inventories",
-                column: "ProductColorId");
+                name: "IX_order_details_ColorId",
+                table: "order_details",
+                column: "ColorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_order_details_OrderId",
                 table: "order_details",
                 column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_order_details_ProductColorId",
-                table: "order_details",
-                column: "ProductColorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_orders_AddressId",
@@ -647,23 +744,8 @@ namespace NguyenSao_2122110145.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_product_colors_VariantId",
-                table: "product_colors",
-                column: "VariantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_product_sales_ProductColorId",
-                table: "product_sales",
-                column: "ProductColorId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_product_specifications_ProductId",
                 table: "product_specifications",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_product_variants_ProductId",
-                table: "product_variants",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -695,6 +777,16 @@ namespace NguyenSao_2122110145.Migrations
                 name: "IX_reviews_UserId",
                 table: "reviews",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_sales_ColorId",
+                table: "sales",
+                column: "ColorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_variants_ProductId",
+                table: "variants",
+                column: "ProductId");
         }
 
         /// <inheritdoc />
@@ -707,16 +799,16 @@ namespace NguyenSao_2122110145.Migrations
                 name: "feedbacks");
 
             migrationBuilder.DropTable(
-                name: "images");
+                name: "inventories");
 
             migrationBuilder.DropTable(
-                name: "inventories");
+                name: "Medias");
 
             migrationBuilder.DropTable(
                 name: "order_details");
 
             migrationBuilder.DropTable(
-                name: "product_sales");
+                name: "otp");
 
             migrationBuilder.DropTable(
                 name: "product_specifications");
@@ -725,13 +817,16 @@ namespace NguyenSao_2122110145.Migrations
                 name: "reviews");
 
             migrationBuilder.DropTable(
+                name: "sales");
+
+            migrationBuilder.DropTable(
                 name: "questions");
 
             migrationBuilder.DropTable(
                 name: "orders");
 
             migrationBuilder.DropTable(
-                name: "product_colors");
+                name: "colors");
 
             migrationBuilder.DropTable(
                 name: "addresses");
@@ -743,7 +838,7 @@ namespace NguyenSao_2122110145.Migrations
                 name: "payment_methods");
 
             migrationBuilder.DropTable(
-                name: "product_variants");
+                name: "variants");
 
             migrationBuilder.DropTable(
                 name: "users");
@@ -752,7 +847,7 @@ namespace NguyenSao_2122110145.Migrations
                 name: "products");
 
             migrationBuilder.DropTable(
-                name: "brand");
+                name: "brands");
 
             migrationBuilder.DropTable(
                 name: "categories");

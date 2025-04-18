@@ -11,8 +11,13 @@ namespace NguyenSao_2122110145.Models
 
         public required string Name { get; set; }
 
+        public required string Slug { get; set; }
+
         public string? ImageUrl { get; set; }
 
-        public virtual List<Product>? Products { get; set; }
+        public required Status Status { get; set; } = Status.Active;
+
+
+        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

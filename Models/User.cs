@@ -9,17 +9,21 @@ namespace NguyenSao_2122110145.Models
         [Key]
         public int Id { get; set; }
 
-        public required string Name { get; set; }
+        public required string FullName { get; set; }
 
         public string? Avatar { get; set; }
 
         public required string Email { get; set; }
 
-        public required string PasswordHash { get; set; }
+        public required string Password { get; set; }
 
-        public required RoleType Role { get; set; }
+        public required RoleStatus Role { get; set; }
 
-        public UserStatus? UserStatus { get; set; }
+        public required UserStatus UserStatus { get; set; }
+
+        public DateTime? LastLogin { get; set; }
+
+        public ICollection<Address> Addresses { get; set; } = new List<Address>();
 
     }
 }

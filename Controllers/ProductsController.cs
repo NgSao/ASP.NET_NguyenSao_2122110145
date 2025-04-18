@@ -23,83 +23,33 @@ namespace NguyenSao_2122110145.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductResponseDto>>> GetProducts()
         {
             var products = await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.Variants)
+                .Include(p => p.Medias)
                 .ToListAsync();
+
             var productDtos = _mapper.Map<List<ProductResponseDto>>(products);
             return Ok(productDtos);
         }
 
 
-        [HttpGet("colors")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetProductsColor(
-            [FromQuery] int? categoryId,
-            [FromQuery] int? brandId,
-            [FromQuery] string? search,
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var query = _context.Products
-                .AsNoTracking()
-                .Include(p => p.Category)
-                .Include(p => p.Brand)
-                .Include(p => p.Variants)
-                    .ThenInclude(pv => pv.Colors)
-                .Include(p => p.Images)
-
-                .AsQueryable();
-
-            if (categoryId.HasValue)
-            {
-                query = query.Where(p => p.CategoryId == categoryId.Value);
-            }
-            if (brandId.HasValue)
-            {
-                query = query.Where(p => p.BrandId == brandId.Value);
-            }
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(p => p.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
-            }
-
-            var totalCount = await query.CountAsync();
-
-            query = query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize);
-
-            var products = await query.ToListAsync();
-
-            // Ánh xạ sản phẩm
-            var productDtos = _mapper.Map<List<ProductResponseColorDto>>(products);
-
-            // Trả về kết quả với phân trang
-            var response = new
-            {
-                TotalCount = totalCount,
-                Page = page,
-                PageSize = pageSize,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
-                Data = productDtos
-            };
-
-            return Ok(response);
-        }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetProduct(int id)
+        public async Task<ActionResult<ProductResponseDto>> GetProduct(int id)
         {
             var product = await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
+                .Include(p => p.Variants)
+                .Include(p => p.Medias)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (product == null)
-                return NotFound();
+            if (product == null) return NotFound();
 
             var productDto = _mapper.Map<ProductResponseDto>(product);
             return Ok(productDto);
@@ -107,44 +57,68 @@ namespace NguyenSao_2122110145.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto productDto)
+        public async Task<ActionResult<Product>> CreateProduct([FromBody] ProductCreateDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var product = _mapper.Map<Product>(dto);
 
-            var product = _mapper.Map<Product>(productDto);
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-            var responseDto = _mapper.Map<ProductResponseDto>(product);
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, responseDto);
-        }
 
+            // Thêm media nếu có
+            if (dto.Medias != null && dto.Medias.Count > 0)
+            {
+                foreach (var img in dto.Medias)
+                {
+                    var media = _mapper.Map<Media>(img);  // Giả sử bạn cần map sang đối tượng Media
+                    media.ProductId = product.Id;
+                    _context.Medias.Add(media);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+        }
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductUpdateDto productDto)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductUpdateDto dto)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-                return NotFound();
+            var product = await _context.Products.Include(p => p.Medias).FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null) return NotFound();
 
-            _mapper.Map(productDto, product);
+            _mapper.Map(dto, product);
+
+            // Cập nhật lại danh sách ảnh
+            _context.Medias.RemoveRange(product.Medias ?? new List<Media>());
+            if (dto.Images != null)
+            {
+                foreach (var img in dto.Images)
+                {
+                    var media = _mapper.Map<Media>(img);
+                    media.ProductId = product.Id;
+                    _context.Medias.Add(media);
+                }
+            }
+
             await _context.SaveChangesAsync();
-
-            var responseDto = _mapper.Map<ProductResponseDto>(product);
-            return Ok(responseDto);
+            return Ok("Cập nhật thành công");
         }
+
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-                return NotFound();
+            var product = await _context.Products
+                .Include(p => p.Medias)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
+            if (product == null) return NotFound();
+
+            _context.Medias.RemoveRange(product.Medias ?? new List<Media>());
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            return Ok("Xóa thành công");
         }
     }
 }

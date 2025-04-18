@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Image Uploader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input,
+            button {
+                font-size: 0.875rem;
+            }
+
+            #result {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 sm:mx-auto container">
+        <h1 class="text-2xl sm:text-3xl font-bold mb-4 text-center">GitHub Image Uploader</h1>
+        <input type="file" id="imageInput" accept="image/jpeg,image/png,image/gif"
+            class="w-full p-3 mb-4 border rounded text-sm sm:text-base">
+        <button onclick="uploadImage()"
+            class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 text-sm sm:text-base">
+            Upload Image
+        </button>
+        <p id="result" class="mt-4 text-center text-sm sm:text-base"></p>
+    </div>
+
+    <script>
+        async function uploadImage() {
+            const token = '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';
+            const repoOwner = 'NgSao';
+            const repoName = 'images';
+            const fileInput = document.getElementById('imageInput');
+            const result = document.getElementById('result');
+
+            const file = fileInput.files[0];
+            if (!file) {
+                result.innerHTML = '<span class="text-red-500">Please select an image!</span>';
+                return;
+            }
+
+            // Validate image
+            const validExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+            const extension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+            if (!validExtensions.includes(extension)) {
+                result.innerHTML = '<span class="text-red-500">Only JPG, PNG, or GIF images are allowed!</span>';
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                result.innerHTML = '<span class="text-red-500">Image size must not exceed 5MB!</span>';
+                return;
+            }
+
+            try {
+                result.innerHTML = '<span class="text-blue-500">Uploading...</span>';
+
+                // Convert file to base64
+                const reader = new FileReader();
+                const base64Content = await new Promise((resolve) => {
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.readAsDataURL(file);
+                });
+
+                // Sanitize file name
+                const timestamp = Date.now();
+                const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+                const path = `asp/media/${timestamp}_${sanitizedFileName}`;
+
+                // GitHub API request
+                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        message: `Upload image: ${sanitizedFileName}`,
+                        content: base64Content,
+                        branch: 'main'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to upload image to GitHub');
+                }
+
+                const imageUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${path}`;
+                result.innerHTML = `<span class="text-green-500">Image uploaded successfully!</span><br><a href="${imageUrl}" target="_blank" class="text-blue-500 underline">${imageUrl}</a>`;
+
+                // Send image URL to backend
+                try {
+                    const backendResponse = await fetch('/api/Image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ imageUrl })
+                    });
+
+                    if (!backendResponse.ok) {
+                        throw new Error('Failed to save image URL to backend');
+                    }
+
+                    result.innerHTML += '<br><span class="text-green-500">Image URL saved to database!</span>';
+                } catch (backendError) {
+                    result.innerHTML += `<br><span class="text-red-500">Error saving to backend: ${backendError.message}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

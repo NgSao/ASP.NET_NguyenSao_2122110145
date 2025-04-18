@@ -1,5 +1,3 @@
-
-
 //Dùng swager để test API
 //http://localhost:5037/swagger/index.html
 //dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
@@ -11,11 +9,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using NguyenSao_2122110145.Mappings;
+using NguyenSao_2122110145.Services;
+using Octokit;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Mappber
-builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 
 // Đăng ký dịch vụ DbContext với MySQL
@@ -24,18 +22,34 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("MySqlConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))
     ));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
+//Mappber
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.WebHost.UseUrls("http://192.168.1.111:5000", "http://0.0.0.0:5000");
 // Đăng ký CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
 });
+
+
+
+//Đăng ký IGitHubClient: Thêm đoạn mã sau vào Program.cs để cấu hình GitHub client:
+builder.Services.AddSingleton<IGitHubClient>(new GitHubClient(new ProductHeaderValue("NguyenSao-API"))
+{
+    Credentials = new Credentials(builder.Configuration["GitHub:PersonalAccessToken"])
+});
+
+builder.Services.AddHttpClient();
+
 
 // Đăng ký dịch vụ xác thực bằng JWT
 builder.Services.AddAuthentication(options =>
@@ -54,11 +68,10 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+
     };
 
 });
-
-
 
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
@@ -68,6 +81,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "NguyenSao API", Version = "v1" });
 
     // Định nghĩa Bearer Token
@@ -98,18 +112,22 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+
+
 var app = builder.Build();
 
 // Chỉ bật Swagger UI ở môi trường Development
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage(); // Thêm trước UseSwagger
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 

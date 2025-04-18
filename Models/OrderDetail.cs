@@ -11,7 +11,7 @@ namespace NguyenSao_2122110145.Models
 
         public int OrderId { get; set; }
 
-        public int ProductColorId { get; set; }
+        public int ColorId { get; set; }
 
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
@@ -22,7 +22,7 @@ namespace NguyenSao_2122110145.Models
         [ForeignKey("OrderId")]
         public virtual Order? Order { get; set; }
 
-        [ForeignKey("ProductColorId")]
-        public virtual ProductColor? ProductColor { get; set; }
+        [ForeignKey("ColorId")]
+        public virtual Color? Color { get; set; }
     }
 }

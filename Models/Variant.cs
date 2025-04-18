@@ -3,14 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NguyenSao_2122110145.Models
 {
-    [Table("product_variants")]
-    public class ProductVariant : AuditableEntity
+    [Table("variants")]
+    public class Variant : AuditableEntity
     {
         [Key]
         public int Id { get; set; }
-
-
-        public required string Storage { get; set; }
+        public required string Size { get; set; }
 
         [Range(0, double.MaxValue)]
         public decimal BasePrice { get; set; }
@@ -18,8 +16,8 @@ namespace NguyenSao_2122110145.Models
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        public virtual Product? Product { get; set; }
+        public required Product Product { get; set; }
 
-        public virtual IEnumerable<ProductColor> Colors { get; set; } = new List<ProductColor>();
+        public virtual IEnumerable<Color> Colors { get; set; } = new List<Color>();
     }
 }

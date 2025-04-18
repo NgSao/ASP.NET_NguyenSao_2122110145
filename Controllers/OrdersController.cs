@@ -32,7 +32,7 @@ namespace NguyenSao_2122110145.Controllers
                 .Include(o => o.Address)
                 .Include(o => o.PaymentMethod)
                 .Include(o => o.DiscountCode)
-                .Include(o => o.OrderDetails).ThenInclude(od => od.ProductColor)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Color)
                 .ToListAsync();
 
             var orderDtos = _mapper.Map<List<OrderResponseDto>>(orders);
@@ -48,7 +48,7 @@ namespace NguyenSao_2122110145.Controllers
                 .Include(o => o.Address)
                 .Include(o => o.PaymentMethod)
                 .Include(o => o.DiscountCode)
-                .Include(o => o.OrderDetails).ThenInclude(od => od.ProductColor)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Color)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
@@ -94,9 +94,9 @@ namespace NguyenSao_2122110145.Controllers
             foreach (var detail in orderDto.OrderDetails)
             {
                 var inventory = await _context.Inventories
-                    .FirstOrDefaultAsync(i => i.ProductColorId == detail.ProductColorId);
+                    .FirstOrDefaultAsync(i => i.ColorId == detail.ColorId);
                 if (inventory == null || inventory.Quantity < detail.Quantity)
-                    return BadRequest($"Sản phẩm {detail.ProductColorId} không đủ hàng.");
+                    return BadRequest($"Sản phẩm {detail.ColorId} không đủ hàng.");
             }
 
             var order = _mapper.Map<Order>(orderDto);
@@ -126,11 +126,11 @@ namespace NguyenSao_2122110145.Controllers
             foreach (var detail in order.OrderDetails)
             {
                 var inventory = await _context.Inventories
-                    .FirstOrDefaultAsync(i => i.ProductColorId == detail.ProductColorId);
+                    .FirstOrDefaultAsync(i => i.ColorId == detail.ColorId);
 
                 if (inventory == null)
                 {
-                    return BadRequest($"Sản phẩm màu {detail.ProductColorId} không có trong kho.");
+                    return BadRequest($"Sản phẩm màu {detail.ColorId} không có trong kho.");
                 }
 
                 inventory.Quantity -= detail.Quantity;

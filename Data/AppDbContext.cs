@@ -12,22 +12,23 @@ namespace NguyenSao_2122110145.Data
             _httpContextAccessor = httpContextAccessor;
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<Otp> Otps { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<DiscountCode> DiscountCodes { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
-        public DbSet<Image> Images { get; set; }
+        public DbSet<Media> Medias { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductColor> ProductColors { get; set; }
-        public DbSet<ProductSale> ProductSales { get; set; }
+        public DbSet<Color> Colors { get; set; }
+        public DbSet<Sale> Sales { get; set; }
         public DbSet<ProductSpecification> ProductSpecifications { get; set; }
-        public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<Variant> Variants { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
@@ -86,6 +87,8 @@ namespace NguyenSao_2122110145.Data
                 .Property(u => u.Role)
                 .HasConversion<int>();
 
+
+
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.User)
                 .WithMany()
@@ -122,20 +125,20 @@ namespace NguyenSao_2122110145.Data
                 .WithMany(b => b.Products)
                 .HasForeignKey(p => p.BrandId);
 
-            modelBuilder.Entity<ProductVariant>()
+            modelBuilder.Entity<Variant>()
                 .HasOne(pv => pv.Product)
                 .WithMany(p => p.Variants)
                 .HasForeignKey(pv => pv.ProductId);
 
-            modelBuilder.Entity<ProductColor>()
+            modelBuilder.Entity<Color>()
                 .HasOne(pc => pc.Variant)
                 .WithMany(pv => pv.Colors)
                 .HasForeignKey(pc => pc.VariantId);
 
             modelBuilder.Entity<Inventory>()
-                .HasOne(i => i.ProductColor)
+                .HasOne(i => i.Color)
                 .WithMany()
-                .HasForeignKey(i => i.ProductColorId);
+                .HasForeignKey(i => i.ColorId);
 
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.Product)

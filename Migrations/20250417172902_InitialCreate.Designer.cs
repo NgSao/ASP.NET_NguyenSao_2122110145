@@ -12,7 +12,7 @@ using NguyenSao_2122110145.Data;
 namespace NguyenSao_2122110145.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250412175516_InitialCreate")]
+    [Migration("20250417172902_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,9 +33,22 @@ namespace NguyenSao_2122110145.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("AddressDetail")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("District")
                         .IsRequired()
@@ -49,9 +62,11 @@ namespace NguyenSao_2122110145.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Street")
-                        .IsRequired()
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -88,6 +103,13 @@ namespace NguyenSao_2122110145.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("longtext");
 
@@ -96,7 +118,7 @@ namespace NguyenSao_2122110145.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("brand");
+                    b.ToTable("brands");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.CartItem", b =>
@@ -107,14 +129,14 @@ namespace NguyenSao_2122110145.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ColorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("ProductColorId")
-                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -130,7 +152,7 @@ namespace NguyenSao_2122110145.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductColorId");
+                    b.HasIndex("ColorId");
 
                     b.HasIndex("UserId");
 
@@ -145,6 +167,12 @@ namespace NguyenSao_2122110145.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("longtext");
 
@@ -155,11 +183,73 @@ namespace NguyenSao_2122110145.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
 
                     b.ToTable("categories");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Color", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColorName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("SalePrice")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("Sold")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("VariantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VariantId");
+
+                    b.ToTable("colors");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.DiscountCode", b =>
@@ -175,6 +265,12 @@ namespace NguyenSao_2122110145.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<decimal?>("DiscountAmount")
                         .HasColumnType("decimal(65,30)");
 
@@ -188,6 +284,12 @@ namespace NguyenSao_2122110145.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("UsageLimit")
@@ -217,8 +319,20 @@ namespace NguyenSao_2122110145.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -232,28 +346,6 @@ namespace NguyenSao_2122110145.Migrations
                     b.ToTable("feedbacks");
                 });
 
-            modelBuilder.Entity("NguyenSao_2122110145.Models.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("images");
-                });
-
             modelBuilder.Entity("NguyenSao_2122110145.Models.Inventory", b =>
                 {
                     b.Property<int>("Id")
@@ -262,17 +354,69 @@ namespace NguyenSao_2122110145.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProductColorId")
+                    b.Property<int>("ColorId")
                         .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductColorId");
+                    b.HasIndex("ColorId");
 
                     b.ToTable("inventories");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Media", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ColorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColorId")
+                        .IsUnique();
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Medias");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.Order", b =>
@@ -337,6 +481,9 @@ namespace NguyenSao_2122110145.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ColorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
@@ -349,9 +496,6 @@ namespace NguyenSao_2122110145.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<int>("ProductColorId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -363,11 +507,36 @@ namespace NguyenSao_2122110145.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ColorId");
+
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("ProductColorId");
-
                     b.ToTable("order_details");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Otp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("otp");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.PaymentMethod", b =>
@@ -423,11 +592,25 @@ namespace NguyenSao_2122110145.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("SalePrice")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("longtext");
@@ -444,97 +627,6 @@ namespace NguyenSao_2122110145.Migrations
                     b.ToTable("products");
                 });
 
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductColor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ColorName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("OriginalPrice")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal>("SalePrice")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("Sold")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("VariantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VariantId");
-
-                    b.ToTable("product_colors");
-                });
-
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductSale", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<decimal?>("DiscountAmount")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal?>("DiscountPercent")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("ProductColorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductColorId");
-
-                    b.ToTable("product_sales");
-                });
-
             modelBuilder.Entity("NguyenSao_2122110145.Models.ProductSpecification", b =>
                 {
                     b.Property<int>("Id")
@@ -543,12 +635,24 @@ namespace NguyenSao_2122110145.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -559,43 +663,6 @@ namespace NguyenSao_2122110145.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("product_specifications");
-                });
-
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductVariant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("BasePrice")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Storage")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("product_variants");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.Question", b =>
@@ -614,8 +681,20 @@ namespace NguyenSao_2122110145.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -670,6 +749,51 @@ namespace NguyenSao_2122110145.Migrations
                     b.ToTable("reviews");
                 });
 
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Sale", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ColorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal?>("DiscountAmount")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal?>("DiscountPercent")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColorId");
+
+                    b.ToTable("sales");
+                });
+
             modelBuilder.Entity("NguyenSao_2122110145.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -691,11 +815,14 @@ namespace NguyenSao_2122110145.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -708,7 +835,7 @@ namespace NguyenSao_2122110145.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("UserStatus")
+                    b.Property<int>("UserStatus")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -716,10 +843,47 @@ namespace NguyenSao_2122110145.Migrations
                     b.ToTable("users");
                 });
 
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Variant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("variants");
+                });
+
             modelBuilder.Entity("NguyenSao_2122110145.Models.Address", b =>
                 {
                     b.HasOne("NguyenSao_2122110145.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -729,9 +893,9 @@ namespace NguyenSao_2122110145.Migrations
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.CartItem", b =>
                 {
-                    b.HasOne("NguyenSao_2122110145.Models.ProductColor", "ProductColor")
+                    b.HasOne("NguyenSao_2122110145.Models.Color", "Color")
                         .WithMany()
-                        .HasForeignKey("ProductColorId")
+                        .HasForeignKey("ColorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -741,7 +905,7 @@ namespace NguyenSao_2122110145.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProductColor");
+                    b.Navigation("Color");
 
                     b.Navigation("User");
                 });
@@ -753,6 +917,17 @@ namespace NguyenSao_2122110145.Migrations
                         .HasForeignKey("ParentId");
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Color", b =>
+                {
+                    b.HasOne("NguyenSao_2122110145.Models.Variant", "Variant")
+                        .WithMany("Colors")
+                        .HasForeignKey("VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.Feedback", b =>
@@ -772,26 +947,30 @@ namespace NguyenSao_2122110145.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("NguyenSao_2122110145.Models.Image", b =>
-                {
-                    b.HasOne("NguyenSao_2122110145.Models.Product", "Product")
-                        .WithMany("Images")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("NguyenSao_2122110145.Models.Inventory", b =>
                 {
-                    b.HasOne("NguyenSao_2122110145.Models.ProductColor", "ProductColor")
+                    b.HasOne("NguyenSao_2122110145.Models.Color", "Color")
                         .WithMany()
-                        .HasForeignKey("ProductColorId")
+                        .HasForeignKey("ColorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProductColor");
+                    b.Navigation("Color");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Media", b =>
+                {
+                    b.HasOne("NguyenSao_2122110145.Models.Color", "Color")
+                        .WithOne("Media")
+                        .HasForeignKey("NguyenSao_2122110145.Models.Media", "ColorId");
+
+                    b.HasOne("NguyenSao_2122110145.Models.Product", "Product")
+                        .WithMany("Medias")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Color");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.Order", b =>
@@ -830,21 +1009,21 @@ namespace NguyenSao_2122110145.Migrations
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.OrderDetail", b =>
                 {
+                    b.HasOne("NguyenSao_2122110145.Models.Color", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("NguyenSao_2122110145.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NguyenSao_2122110145.Models.ProductColor", "ProductColor")
-                        .WithMany()
-                        .HasForeignKey("ProductColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Color");
 
                     b.Navigation("Order");
-
-                    b.Navigation("ProductColor");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.Product", b =>
@@ -866,43 +1045,10 @@ namespace NguyenSao_2122110145.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductColor", b =>
-                {
-                    b.HasOne("NguyenSao_2122110145.Models.ProductVariant", "Variant")
-                        .WithMany("Colors")
-                        .HasForeignKey("VariantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Variant");
-                });
-
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductSale", b =>
-                {
-                    b.HasOne("NguyenSao_2122110145.Models.ProductColor", "ProductColor")
-                        .WithMany("Sales")
-                        .HasForeignKey("ProductColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductColor");
-                });
-
             modelBuilder.Entity("NguyenSao_2122110145.Models.ProductSpecification", b =>
                 {
                     b.HasOne("NguyenSao_2122110145.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductVariant", b =>
-                {
-                    b.HasOne("NguyenSao_2122110145.Models.Product", "Product")
-                        .WithMany("Variants")
+                        .WithMany("Specifications")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -946,6 +1092,28 @@ namespace NguyenSao_2122110145.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Sale", b =>
+                {
+                    b.HasOne("NguyenSao_2122110145.Models.Color", "Color")
+                        .WithMany("Sales")
+                        .HasForeignKey("ColorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Color");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Variant", b =>
+                {
+                    b.HasOne("NguyenSao_2122110145.Models.Product", "Product")
+                        .WithMany("Variants")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("NguyenSao_2122110145.Models.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -956,6 +1124,13 @@ namespace NguyenSao_2122110145.Migrations
                     b.Navigation("Children");
 
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Color", b =>
+                {
+                    b.Navigation("Media");
+
+                    b.Navigation("Sales");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.DiscountCode", b =>
@@ -970,24 +1145,26 @@ namespace NguyenSao_2122110145.Migrations
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.Product", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Medias");
+
+                    b.Navigation("Specifications");
 
                     b.Navigation("Variants");
-                });
-
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductColor", b =>
-                {
-                    b.Navigation("Sales");
-                });
-
-            modelBuilder.Entity("NguyenSao_2122110145.Models.ProductVariant", b =>
-                {
-                    b.Navigation("Colors");
                 });
 
             modelBuilder.Entity("NguyenSao_2122110145.Models.Question", b =>
                 {
                     b.Navigation("Feedbacks");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.User", b =>
+                {
+                    b.Navigation("Addresses");
+                });
+
+            modelBuilder.Entity("NguyenSao_2122110145.Models.Variant", b =>
+                {
+                    b.Navigation("Colors");
                 });
 #pragma warning restore 612, 618
         }

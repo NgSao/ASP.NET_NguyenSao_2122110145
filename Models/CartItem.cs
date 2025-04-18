@@ -11,15 +11,15 @@ namespace NguyenSao_2122110145.Models
 
         public int UserId { get; set; }
 
-        public int ProductColorId { get; set; }
+        public int ColorId { get; set; }
 
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
 
         [ForeignKey("UserId")]
-        public virtual User? User { get; set; }
+        public required User User { get; set; }
 
-        [ForeignKey("ProductColorId")]
-        public virtual ProductColor? ProductColor { get; set; }
+        [ForeignKey("ColorId")]
+        public required Color Color { get; set; }
     }
 }

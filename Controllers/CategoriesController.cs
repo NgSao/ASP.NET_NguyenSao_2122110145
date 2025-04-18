@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using NguyenSao_2122110145.Data;
 using NguyenSao_2122110145.DTOs;
 using NguyenSao_2122110145.Models;
-using System.Security.Claims;
 
 namespace NguyenSao_2122110145.Controllers
 {
@@ -22,24 +21,29 @@ namespace NguyenSao_2122110145.Controllers
             _mapper = mapper;
         }
 
+        // Lấy tất cả danh mục (cả con)
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetCategories()
         {
             var categories = await _context.Categories
-                .Include(c => c.Parent)
+                .Include(c => c.Children)
+                .Where(c => c.ParentId == null)
                 .ToListAsync();
+
             var categoryDtos = _mapper.Map<List<CategoryResponseDto>>(categories);
             return Ok(categoryDtos);
         }
 
+        // Lấy danh mục theo ID
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCategory(int id)
         {
             var category = await _context.Categories
-                .Include(c => c.Parent)
+                .Include(c => c.Children)
                 .FirstOrDefaultAsync(c => c.Id == id);
+
             if (category == null)
                 return NotFound();
 
@@ -47,6 +51,7 @@ namespace NguyenSao_2122110145.Controllers
             return Ok(categoryDto);
         }
 
+        // Tạo danh mục mới
         [HttpPost]
         [Authorize(Roles = "Manager,Admin")]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto categoryDto)
@@ -62,9 +67,10 @@ namespace NguyenSao_2122110145.Controllers
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, responseDto);
         }
 
+        // Cập nhật danh mục
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryCreateDto categoryDto)
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryUpdateDto categoryDto)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
@@ -77,6 +83,7 @@ namespace NguyenSao_2122110145.Controllers
             return Ok(responseDto);
         }
 
+        // Xóa danh mục
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int id)

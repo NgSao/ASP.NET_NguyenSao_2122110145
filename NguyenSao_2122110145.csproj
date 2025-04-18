@@ -15,8 +15,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.13" />
+    <PackageReference Include="Octokit" Version="14.0.0" />
       <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
 <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
 
   </ItemGroup>

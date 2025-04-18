@@ -69,13 +69,17 @@
               "target": "Package",
               "version": "[8.0.13, )"
             },
+            "Octokit": {
+              "target": "Package",
+              "version": "[14.0.0, )"
+            },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[8.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[8.1.0, )"
+              "version": "[8.1.1, )"
             }
           },
           "imports": [

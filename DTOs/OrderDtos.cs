@@ -18,7 +18,7 @@ namespace NguyenSao_2122110145.DTOs
 
     public class OrderDetailCreateDto
     {
-        public required int ProductColorId { get; set; }
+        public required int ColorId { get; set; }
 
         [Range(1, int.MaxValue)]
         public required int Quantity { get; set; }
@@ -47,7 +47,7 @@ namespace NguyenSao_2122110145.DTOs
     public class OrderDetailResponseDto
     {
         public int Id { get; set; }
-        public int ProductColorId { get; set; }
+        public int ColorId { get; set; }
         public string? ProductName { get; set; }
         public string? ColorName { get; set; }
         public int Quantity { get; set; }

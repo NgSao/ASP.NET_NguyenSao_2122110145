@@ -16,12 +16,22 @@ namespace NguyenSao_2122110145.Models
         Blocked = 3
     }
 
-    public enum RoleType
+    public enum RoleStatus
     {
         Customer = 1,
         Staff = 2,
         Manager = 3,
         Warehouse = 4,
         Admin = 5
+    }
+
+    public enum Status
+    {
+        Active = 1,
+        Hiden = 2,
+        Trash = 3,
+        Delete = 4
+
+
     }
 }

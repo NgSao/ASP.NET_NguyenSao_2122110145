@@ -9,8 +9,7 @@ namespace NguyenSao_2122110145.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         public required string Key { get; set; }
 

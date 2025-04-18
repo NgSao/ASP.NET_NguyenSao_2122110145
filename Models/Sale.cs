@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NguyenSao_2122110145.Models
 {
-    [Table("product_sales")]
-    public class ProductSale : AuditableEntity
+    [Table("sales")]
+    public class Sale : AuditableEntity
     {
         [Key]
         public int Id { get; set; }
 
-        public int ProductColorId { get; set; }
+        public int ColorId { get; set; }
 
         [Range(0, double.MaxValue)]
         public decimal? DiscountAmount { get; set; }
@@ -23,7 +23,10 @@ namespace NguyenSao_2122110145.Models
         [Required]
         public DateTime EndDate { get; set; }
 
-        [ForeignKey("ProductColorId")]
-        public virtual ProductColor? ProductColor { get; set; }
+        [ForeignKey("ColorId")]
+        public required Color Color { get; set; }
+
+        public required Status Status { get; set; } = Status.Active;
+
     }
 }

@@ -27,7 +27,7 @@ namespace NguyenSao_2122110145.Controllers
         public async Task<IActionResult> GetInventories()
         {
             var inventories = await _context.Inventories
-                .Include(i => i.ProductColor).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
+                .Include(i => i.Color).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
                 .ToListAsync();
 
             var inventoryDtos = _mapper.Map<List<InventoryResponseDto>>(inventories);
@@ -39,7 +39,7 @@ namespace NguyenSao_2122110145.Controllers
         public async Task<IActionResult> GetInventory(int id)
         {
             var inventory = await _context.Inventories
-                .Include(i => i.ProductColor).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
+                .Include(i => i.Color).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (inventory == null)

@@ -32,5 +32,6 @@ namespace NguyenSao_2122110145.Models
         public bool IsActive { get; set; } = true;
 
         public virtual ICollection<Order>? Orders { get; set; }
+
     }
 }

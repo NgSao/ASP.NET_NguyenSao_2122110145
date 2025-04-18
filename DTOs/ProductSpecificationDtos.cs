@@ -11,6 +11,16 @@ namespace NguyenSao_2122110145.DTOs
         public required string Value { get; set; }
     }
 
+
+    public class ProductSpecificationUpdateDto
+    {
+        public int? ProductId { get; set; }
+
+        public string? Key { get; set; }
+
+        public string? Value { get; set; }
+    }
+
     public class ProductSpecificationResponseDto : AuditableDtos
     {
         public int Id { get; set; }

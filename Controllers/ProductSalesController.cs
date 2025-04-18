@@ -26,8 +26,8 @@ namespace NguyenSao_2122110145.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetProductSales()
         {
-            var productSales = await _context.ProductSales
-                .Include(ps => ps.ProductColor).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
+            var productSales = await _context.Sales
+                .Include(ps => ps.Color).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
                 .ToListAsync();
 
             var productSaleDtos = _mapper.Map<List<ProductSaleResponseDto>>(productSales);
@@ -38,8 +38,8 @@ namespace NguyenSao_2122110145.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetProductSale(int id)
         {
-            var productSale = await _context.ProductSales
-                .Include(ps => ps.ProductColor).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
+            var productSale = await _context.Sales
+                .Include(ps => ps.Color).ThenInclude(pc => pc.Variant).ThenInclude(v => v.Product)
                 .FirstOrDefaultAsync(ps => ps.Id == id);
 
             if (productSale == null)
@@ -59,9 +59,9 @@ namespace NguyenSao_2122110145.Controllers
             if (productSaleDto.DiscountAmount == null && productSaleDto.DiscountPercent == null)
                 return BadRequest("Phải cung cấp DiscountAmount hoặc DiscountPercent.");
 
-            var productSale = _mapper.Map<ProductSale>(productSaleDto);
+            var productSale = _mapper.Map<Sale>(productSaleDto);
 
-            _context.ProductSales.Add(productSale);
+            _context.Sales.Add(productSale);
             await _context.SaveChangesAsync();
 
             var responseDto = _mapper.Map<ProductSaleResponseDto>(productSale);
@@ -72,7 +72,7 @@ namespace NguyenSao_2122110145.Controllers
         [Authorize(Roles = "Manager,Admin")]
         public async Task<IActionResult> UpdateProductSale(int id, [FromBody] ProductSaleCreateDto productSaleDto)
         {
-            var productSale = await _context.ProductSales.FindAsync(id);
+            var productSale = await _context.Sales.FindAsync(id);
             if (productSale == null)
                 return NotFound();
 
@@ -88,11 +88,11 @@ namespace NguyenSao_2122110145.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProductSale(int id)
         {
-            var productSale = await _context.ProductSales.FindAsync(id);
+            var productSale = await _context.Sales.FindAsync(id);
             if (productSale == null)
                 return NotFound();
 
-            _context.ProductSales.Remove(productSale);
+            _context.Sales.Remove(productSale);
             await _context.SaveChangesAsync();
             return NoContent();
         }

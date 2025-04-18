@@ -61,7 +61,7 @@ namespace NguyenSao_2122110145.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> UpdateBrand(int id, [FromBody] BrandCreateDto brandDto)
+        public async Task<IActionResult> UpdateBrand(int id, [FromBody] BrandUpdateDto brandDto)
         {
             var brand = await _context.Brands.FindAsync(id);
             if (brand == null)

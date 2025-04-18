@@ -66,7 +66,7 @@ namespace NguyenSao_2122110145.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> UpdateProductSpecification(int id, [FromBody] ProductSpecificationCreateDto specificationDto)
+        public async Task<IActionResult> UpdateProductSpecification(int id, [FromBody] ProductSpecificationUpdateDto specificationDto)
         {
             var specification = await _context.ProductSpecifications.FindAsync(id);
             if (specification == null)

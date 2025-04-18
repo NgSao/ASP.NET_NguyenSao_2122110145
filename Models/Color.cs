@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NguyenSao_2122110145.Models
 {
-    [Table("product_colors")]
-    public class ProductColor : AuditableEntity
+    [Table("colors")]
+    public class Color : AuditableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -28,8 +28,11 @@ namespace NguyenSao_2122110145.Models
         public int VariantId { get; set; }
 
         [ForeignKey("VariantId")]
-        public virtual ProductVariant? Variant { get; set; }
+        public required Variant Variant { get; set; }
 
-        public virtual ICollection<ProductSale>? Sales { get; set; }
+        public virtual ICollection<Sale>? Sales { get; set; } = new List<Sale>();
+
+        public virtual Media? Media { get; set; }
+
     }
 }
