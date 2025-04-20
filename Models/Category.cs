@@ -14,15 +14,6 @@ namespace NguyenSao_2122110145.Models
 
         public string? ImageUrl { get; set; }
 
-        public int? ParentId { get; set; }
-
-        [ForeignKey("ParentId")]
-        public virtual Category? Parent { get; set; }
-
-        public required Status Status { get; set; } = Status.Active;
-
-        public virtual ICollection<Category>? Children { get; set; } = new List<Category>();
-
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

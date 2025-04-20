@@ -25,13 +25,5 @@ namespace NguyenSao_2122110145.Models
         Admin = 5
     }
 
-    public enum Status
-    {
-        Active = 1,
-        Hiden = 2,
-        Trash = 3,
-        Delete = 4
 
-
-    }
 }

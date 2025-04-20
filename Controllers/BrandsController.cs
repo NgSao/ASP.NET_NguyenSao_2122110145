@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using NguyenSao_2122110145.Data;
 using NguyenSao_2122110145.DTOs;
 using NguyenSao_2122110145.Models;
-using System.Security.Claims;
-
+using System.Text.RegularExpressions;
+using System.Text;
+using System.Text.Json;
+using System.Net.Http.Headers;
 namespace NguyenSao_2122110145.Controllers
 {
     [Route("api/[controller]")]
@@ -15,77 +17,241 @@ namespace NguyenSao_2122110145.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _githubToken;
+        private readonly string _repoOwner;
+        private readonly string _repoName;
+        private readonly string _branch;
 
-        public BrandsController(AppDbContext context, IMapper mapper)
+
+        public BrandsController(AppDbContext context, IMapper mapper,
+        IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
+            _httpClientFactory = httpClientFactory;
+            _githubToken = configuration["GitHub:PersonalAccessToken"]!;
+            _repoOwner = configuration["GitHub:RepoOwner"]!;
+            _repoName = configuration["GitHub:RepoName"]!;
+            _branch = configuration["GitHub:Branch"]!;
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetBrands()
         {
-            var brands = await _context.Brands.ToListAsync();
+            var brands = await _context.Brands
+                .Include(b => b.Products)
+                .ToListAsync();
             var brandDtos = _mapper.Map<List<BrandResponseDto>>(brands);
-            return Ok(brandDtos);
+            return Ok(new { data = brandDtos });
+
         }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBrand(int id)
         {
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = await _context.Brands
+                .Include(b => b.Products)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
             if (brand == null)
-                return NotFound();
+                return NotFound(new { message = "Not Foud." });
 
             var brandDto = _mapper.Map<BrandResponseDto>(brand);
-            return Ok(brandDto);
+            return Ok(new { data = brandDto });
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> CreateBrand([FromBody] BrandCreateDto brandDto)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateBrand([FromForm] BrandCreateDto request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
-            var brand = _mapper.Map<Brand>(brandDto);
 
-            _context.Brands.Add(brand);
-            await _context.SaveChangesAsync();
+            if (request.File == null || request.File.Length == 0)
+            {
+                return BadRequest(new { message = "No file uploaded." });
+            }
 
-            var responseDto = _mapper.Map<BrandResponseDto>(brand);
-            return CreatedAtAction(nameof(GetBrand), new { id = brand.Id }, responseDto);
+            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(request.File.FileName).ToLower();
+            if (!validExtensions.Contains(extension))
+            {
+                return BadRequest(new { message = "Only JPG, PNG, or GIF images are allowed." });
+            }
+
+            if (request.File.Length > 5 * 1024 * 1024)
+            {
+                return BadRequest(new { message = "Image size must not exceed 5MB." });
+            }
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await request.File.CopyToAsync(memoryStream);
+                var base64Content = Convert.ToBase64String(memoryStream.ToArray());
+
+                var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                var sanitizedFileName = Regex.Replace(request.File.FileName, "[^a-zA-Z0-9.-]", "_");
+                var path = $"asp/brands/{timestamp}_{sanitizedFileName}";
+
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("NguyenSaoApp");
+
+                var requestContent = new StringContent(
+                    JsonSerializer.Serialize(new
+                    {
+                        message = $"Upload image: {sanitizedFileName}",
+                        content = base64Content,
+                        branch = _branch
+                    }),
+                    Encoding.UTF8, "application/json"
+                );
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _githubToken);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+
+                var response = await client.PutAsync(
+                    $"https://api.github.com/repos/{_repoOwner}/{_repoName}/contents/{path}",
+                    requestContent
+                );
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    return StatusCode((int)response.StatusCode, new { message = "Failed to upload image to GitHub.", error = errorContent });
+                }
+
+                var imageUrl = $"https://raw.githubusercontent.com/{_repoOwner}/{_repoName}/main/{path}";
+
+                var brand = new Brand
+                {
+                    Name = request.Name,
+                    Slug = request.Slug,
+                    ImageUrl = imageUrl,
+                };
+                _context.Brands.Add(brand);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Image uploaded and avatar updated successfully.", imageUrl });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while uploading the image.", error = ex.Message });
+            }
         }
+
+
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> UpdateBrand(int id, [FromBody] BrandUpdateDto brandDto)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateBrandImage(int id, [FromForm] BrandUpdateDto request)
         {
             var brand = await _context.Brands.FindAsync(id);
             if (brand == null)
-                return NotFound();
+                return NotFound(new { message = "Brand not found." });
 
-            _mapper.Map(brandDto, brand);
+            string? imageUrl = null;
+
+            if (request.File != null && request.File.Length > 0)
+            {
+                var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(request.File.FileName).ToLower();
+
+                if (!validExtensions.Contains(extension))
+                    return BadRequest(new { message = "Only JPG, PNG, or GIF images are allowed." });
+
+                if (request.File.Length > 5 * 1024 * 1024)
+                    return BadRequest(new { message = "Image size must not exceed 5MB." });
+
+                try
+                {
+                    using var memoryStream = new MemoryStream();
+                    await request.File.CopyToAsync(memoryStream);
+                    var base64Content = Convert.ToBase64String(memoryStream.ToArray());
+
+                    var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    var sanitizedFileName = Regex.Replace(request.File.FileName, "[^a-zA-Z0-9.-]", "_");
+                    var path = $"asp/brands/{timestamp}_{sanitizedFileName}";
+
+                    var client = _httpClientFactory.CreateClient();
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("NguyenSaoApp");
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _githubToken);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+
+                    var uploadBody = new
+                    {
+                        message = $"Upload image: {sanitizedFileName}",
+                        content = base64Content,
+                        branch = _branch
+                    };
+
+                    var requestContent = new StringContent(
+                        JsonSerializer.Serialize(uploadBody),
+                        Encoding.UTF8, "application/json"
+                    );
+
+                    var response = await client.PutAsync(
+                        $"https://api.github.com/repos/{_repoOwner}/{_repoName}/contents/{path}",
+                        requestContent
+                    );
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        return StatusCode((int)response.StatusCode, new { message = "Failed to upload image to GitHub.", error = errorContent });
+                    }
+
+                    imageUrl = $"https://raw.githubusercontent.com/{_repoOwner}/{_repoName}/{_branch}/{path}";
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new { message = "Error uploading image.", error = ex.Message });
+                }
+            }
+            brand.Name = request.Name!;
+            brand.Slug = request.Slug!;
+            if (imageUrl != null)
+            {
+                brand.ImageUrl = imageUrl;
+            }
 
             await _context.SaveChangesAsync();
 
-            var responseDto = _mapper.Map<BrandResponseDto>(brand);
-            return Ok(responseDto);
+            return Ok(new
+            {
+                message = "Brand updated successfully.",
+                imageUrl = brand.ImageUrl,
+                brand
+            });
         }
+
+
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBrand(int id)
         {
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = await _context.Brands
+                .Include(b => b.Products)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
             if (brand == null)
-                return NotFound();
+                return NotFound(new { message = "Not Foud." });
+
+            if (brand.Products != null && brand.Products.Count > 0)
+            {
+                return BadRequest(new { message = "Không thể xóa thương hiệu vì đang có sản phẩm thuộc về nó." });
+            }
 
             _context.Brands.Remove(brand);
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok(new { message = "Oke" });
         }
+
     }
 }

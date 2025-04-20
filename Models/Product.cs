@@ -14,7 +14,6 @@ namespace NguyenSao_2122110145.Models
         public required string Name { get; set; }
         public required string Slug { get; set; }
 
-
         public required string Description { get; set; }
 
         [Range(0, double.MaxValue)]
@@ -22,6 +21,8 @@ namespace NguyenSao_2122110145.Models
 
         [Range(0, double.MaxValue)]
         public decimal SalePrice { get; set; }
+
+        public string? ImageUrl { get; set; }
 
         public int CategoryId { get; set; }
 
@@ -33,13 +34,11 @@ namespace NguyenSao_2122110145.Models
         [ForeignKey("BrandId")]
         public required Brand Brand { get; set; }
 
-        public ICollection<Variant> Variants { get; set; } = new List<Variant>();
+        [Range(0, int.MaxValue)]
+        public int Stock { get; set; }
 
-        public virtual ICollection<Media>? Medias { get; set; } = new List<Media>();
-
-        public ICollection<ProductSpecification> Specifications { get; set; } = new List<ProductSpecification>();
-
-        public required Status Status { get; set; } = Status.Active;
+        [Range(0, int.MaxValue)]
+        public int Sold { get; set; }
 
     }
 }

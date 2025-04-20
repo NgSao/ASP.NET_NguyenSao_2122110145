@@ -16,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-// Đăng ký dịch vụ DbContext với MySQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("MySqlConnection"),
@@ -24,10 +23,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     ));
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-//Mappber
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-builder.WebHost.UseUrls("http://192.168.1.111:5000", "http://0.0.0.0:5000");
-// Đăng ký CORS
+// builder.WebHost.UseUrls("http://172.17.144.1:5000", "http://0.0.0.0:5000");
+builder.WebHost.UseUrls("http://192.168.101.147:5000", "http://0.0.0.0:5000");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -42,7 +41,6 @@ builder.Services.AddCors(options =>
 
 
 
-//Đăng ký IGitHubClient: Thêm đoạn mã sau vào Program.cs để cấu hình GitHub client:
 builder.Services.AddSingleton<IGitHubClient>(new GitHubClient(new ProductHeaderValue("NguyenSao-API"))
 {
     Credentials = new Credentials(builder.Configuration["GitHub:PersonalAccessToken"])
@@ -51,7 +49,6 @@ builder.Services.AddSingleton<IGitHubClient>(new GitHubClient(new ProductHeaderV
 builder.Services.AddHttpClient();
 
 
-// Đăng ký dịch vụ xác thực bằng JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -77,14 +74,12 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 
-// Cấu hình Swagger có hỗ trợ Bearer Token
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
 
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "NguyenSao API", Version = "v1" });
 
-    // Định nghĩa Bearer Token
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -95,7 +90,6 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Nhập JWT token theo định dạng: Bearer {token}"
     });
 
-    // Gắn Bearer vào tất cả các endpoint có [Authorize]
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -117,15 +111,14 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Chỉ bật Swagger UI ở môi trường Development
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage(); // Thêm trước UseSwagger
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();

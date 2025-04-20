@@ -5,6 +5,8 @@ namespace NguyenSao_2122110145.DTOs
 {
     public class AddressCreateDto
     {
+
+
         public required string FullName { get; set; }
         [Phone]
         public required string PhoneNumber { get; set; }

@@ -4,14 +4,12 @@ namespace NguyenSao_2122110145.DTOs
 {
     public class ReviewCreateDto
     {
-        [Required]
         [Range(1, 5)]
-        public int Rating { get; set; }
+        public required int Rating { get; set; }
 
         public string? Comment { get; set; }
 
-        [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
     }
 
     public class ReviewResponseDto : AuditableDtos

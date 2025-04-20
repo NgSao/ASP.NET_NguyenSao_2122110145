@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using NguyenSao_2122110145.Models;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 namespace NguyenSao_2122110145.Data
 {
@@ -15,21 +14,10 @@ namespace NguyenSao_2122110145.Data
         public DbSet<Otp> Otps { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Brand> Brands { get; set; }
-        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<DiscountCode> DiscountCodes { get; set; }
-        public DbSet<Feedback> Feedbacks { get; set; }
-        public DbSet<Media> Medias { get; set; }
-        public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Color> Colors { get; set; }
-        public DbSet<Sale> Sales { get; set; }
-        public DbSet<ProductSpecification> ProductSpecifications { get; set; }
-        public DbSet<Variant> Variants { get; set; }
-        public DbSet<Question> Questions { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -77,83 +65,6 @@ namespace NguyenSao_2122110145.Data
             }
 
             return await base.SaveChangesAsync(cancellationToken);
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<User>()
-                .Property(u => u.Role)
-                .HasConversion<int>();
-
-
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.User)
-                .WithMany()
-                .HasForeignKey(o => o.UserId);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Address)
-                .WithMany()
-                .HasForeignKey(o => o.AddressId);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.PaymentMethod)
-                .WithMany()
-                .HasForeignKey(o => o.PaymentMethodId);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.DiscountCode)
-                .WithMany(dc => dc.Orders)
-                .HasForeignKey(o => o.DiscountCodeId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<OrderDetail>()
-                .HasOne(od => od.Order)
-                .WithMany(o => o.OrderDetails)
-                .HasForeignKey(od => od.OrderId);
-
-            modelBuilder.Entity<Product>()
-              .HasOne(p => p.Category)
-              .WithMany(c => c.Products)
-              .HasForeignKey(p => p.CategoryId);
-
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Brand)
-                .WithMany(b => b.Products)
-                .HasForeignKey(p => p.BrandId);
-
-            modelBuilder.Entity<Variant>()
-                .HasOne(pv => pv.Product)
-                .WithMany(p => p.Variants)
-                .HasForeignKey(pv => pv.ProductId);
-
-            modelBuilder.Entity<Color>()
-                .HasOne(pc => pc.Variant)
-                .WithMany(pv => pv.Colors)
-                .HasForeignKey(pc => pc.VariantId);
-
-            modelBuilder.Entity<Inventory>()
-                .HasOne(i => i.Color)
-                .WithMany()
-                .HasForeignKey(i => i.ColorId);
-
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.Product)
-                .WithMany()
-                .HasForeignKey(r => r.ProductId);
-
-            modelBuilder.Entity<Question>()
-                .HasOne(q => q.Product)
-                .WithMany()
-                .HasForeignKey(q => q.ProductId);
-
-            modelBuilder.Entity<Feedback>()
-                .HasOne(f => f.Question)
-                .WithMany(q => q.Feedbacks)
-                .HasForeignKey(f => f.QuestionId);
         }
 
 

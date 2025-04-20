@@ -13,7 +13,7 @@ namespace NguyenSao_2122110145.Models
 
         public int AddressId { get; set; }
 
-        public int PaymentMethodId { get; set; }
+        public string? PaymentMethod { get; set; }
 
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
@@ -23,19 +23,12 @@ namespace NguyenSao_2122110145.Models
         [Range(0, double.MaxValue)]
         public decimal FinalAmount { get; set; }
 
-        public int? DiscountCodeId { get; set; }
 
         [ForeignKey("UserId")]
         public virtual User? User { get; set; }
 
         [ForeignKey("AddressId")]
         public virtual Address? Address { get; set; }
-
-        [ForeignKey("PaymentMethodId")]
-        public virtual PaymentMethod? PaymentMethod { get; set; }
-
-        [ForeignKey("DiscountCodeId")]
-        public virtual DiscountCode? DiscountCode { get; set; }
 
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }

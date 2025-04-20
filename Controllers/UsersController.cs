@@ -24,7 +24,7 @@ namespace NguyenSao_2122110145.Controllers
         }
 
         [HttpGet]
-        // [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _context.Users.ToListAsync();
